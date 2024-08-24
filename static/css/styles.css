@@ -1,0 +1,65 @@
+body, html {
+    height: 100%;
+    margin: 0;
+}
+
+.gradient-background {
+    background-image: linear-gradient(to right, #112b50, #7a232f);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    color: white;
+}
+
+/* Logo and icons */
+.icon-bar {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+}
+
+.icon-bar a {
+    color: white;
+    font-size: 2rem; /* Size of icons */
+    padding: 0.5rem;
+}
+
+.icon-bar a i {
+    transition: transform 0.3s ease;
+}
+
+.icon-bar a:hover i {
+    transform: scale(1.1); /* Scale icons on hover */
+}
+
+.university-logo {
+    width: 180px; /* Adjust as needed */
+    margin-bottom: -50px; /* Spacing between logo and icons */
+    display: block; /* To ensure it doesn't inline with other elements */
+}
+
+/* Centered avatar image */
+.avatar-image {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 200px; /* Adjust as needed */
+    height: auto;
+}
+
+/* Tower image on the bottom right */
+.tower-image {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    max-width: 100px; /* Adjust as needed */
+    height: auto;
+}

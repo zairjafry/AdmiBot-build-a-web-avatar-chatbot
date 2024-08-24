@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map Page</title>
+    <!-- Link to Bootstrap CSS via CDN for simplicity -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.css">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            background-color: #212529; 
+        }
+        .map-container {
+            position: relative;
+            max-width: 75%; /* Adjust size as needed */
+            overflow: hidden;
+           
+        }
+        .map-image {
+            width: 100%;
+            height: auto;
+        }
+        .tower-image {
+            position: absolute;
+            right: 0px;
+            bottom: 0px;
+            max-width: 200px; /* Adjust size as needed */
+            height: auto;
+        }
+        .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 250px;
+        background: #1a1a1a;
+        padding: 20px 0;
+        transition: width 0.3s;
+        overflow: hidden;
+        z-index: 2; /* Ensure it's above the iframe */
+    }
+
+    .sidebar.collapsed {
+        width: 80px;
+    }
+
+    .sidebar .logo {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .sidebar .logo img {
+        max-width: 120px; /* Adjust logo size here */
+        transition: max-width 0.3s;
+    }
+
+    .sidebar.collapsed .logo img {
+        max-width: 85px; /* Adjust logo size for collapsed state here */
+    }
+
+    .sidebar ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar ul li {
+        text-align: center; /* Align text to the center */
+        padding: 10px 0;
+        display: flex; /* Use flexbox */
+        align-items: center; /* Center vertically */
+        justify-content: center; /* Center horizontally */
+    }
+
+    .sidebar ul li a {
+        color: white;
+        text-decoration: none;
+        display: flex;
+        align-items: center; /* Center vertically */
+        justify-content: flex-start; /* Align items to the start */
+        font-size: 18px;
+        transition: font-size 0.3s;
+        background: none; /* Remove background */
+        padding: 0; /* Remove padding */
+        width: 100%; /* Ensure full width for alignment */
+        padding-left: 20px; /* Add padding to align text properly */
+    }
+
+    .sidebar.collapsed ul li a {
+        justify-content: center; /* Center items when sidebar is collapsed */
+        padding-left: 0; /* Remove padding when collapsed */
+        font-size: 0;
+    }
+
+    .sidebar ul li a img {
+        width: 28px; /* Adjust icon size here */
+        height: 28px; /* Adjust icon size here */
+        margin-right: 10px;
+        transition: margin 0.3s;
+    }
+
+    .sidebar.collapsed ul li a img {
+        margin: 0;
+    }
+
+    .toggle-btn {
+        position: absolute;
+        top: 50%; /* Center vertically */
+        left: 80px; /* Adjusted to match initial collapsed state */
+        transform: translate(-50%, -50%); /* Center horizontally and vertically */
+        width: 30px;
+        height: 40px;
+        background: #1a1a1a;
+        color: white;
+        border: none;
+        z-index: 3; /* Ensure it's above the iframe and sidebar */
+        cursor: pointer;
+        transition: left 0.3s; /* Add transition for smooth movement */
+        border-radius: 6px;
+    }
+        .university-logo {
+            width: 120px !important; /* Adjust as needed */
+            height: auto !important; /* Ensure height scales with width */
+            margin-bottom: 10px;
+        }
+        .zoom-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+        .zoom-controls button {
+            background-color: #4c565e;
+            color: rgb(251, 243, 243);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .zoom-controls button:hover {
+            background-color: #464f56;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar collapsed" id="sidebar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='icons/your-logo.png') }}" alt="University Logo">
+        </div>
+        <ul>
+            <li>
+                <a href="{{ url_for('index') }}">
+                    <img src="{{ url_for('static', filename='icons/Home.png') }}" alt="Home Icon">
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('map_page') }}">
+                    <img src="{{ url_for('static', filename='icons/map-logo.png') }}" alt="Map Icon">
+                    <span>Map</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('pov_page') }}">
+                    <img src="{{ url_for('static', filename='icons/pov-logo.png') }}" alt="POV Icon">
+                    <span>Virtual Tour</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('manual_page') }}">
+                    <img src="{{ url_for('static', filename='icons/manual-logo.png') }}" alt="Manual Icon">
+                    <span>Manual</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <button class="toggle-btn" id="toggleBtn">
+        <i class="bi bi-chevron-right"></i>
+    </button>    
+        <img src="{{ url_for('static', filename='icons/tower.png') }}" alt="Tower" class="tower-image">
+        <!-- Main Content -->
+        <div class="container text-center text-white py-5 map-container" id="mapContainer">
+            <!-- Your uploaded manual image -->
+            <img src="{{ url_for('static', filename='icons/map.png') }}" alt="User Map" class="map-image" id="mapImage">
+        </div>
+        <!-- Zoom Controls -->
+        <div class="zoom-controls">
+            <button onclick="zoomIn()">Zoom In</button>
+            <button onclick="zoomOut()">Zoom Out</button>
+        </div>
+    </div>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Panzoom JS -->
+    <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
+
+    <script>
+        const panzoom = Panzoom(document.getElementById('mapImage'));
+        const mapContainer = document.getElementById('mapContainer');
+
+        // Enable panning inside the container
+        mapContainer.addEventListener('wheel', panzoom.zoomWithWheel);
+
+        function zoomIn() {
+            panzoom.zoomIn();
+        }
+
+        function zoomOut() {
+            if (panzoom.getScale() <= 1) return; // Prevent zooming out beyond original size
+            panzoom.zoomOut();
+        }
+        function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('toggleBtn');
+        
+        sidebar.classList.toggle('collapsed');
+        
+        if (sidebar.classList.contains('collapsed')) {
+            toggleBtn.style.left = '80px'; // Position when collapsed
+            toggleBtn.querySelector('i').classList.remove('bi-chevron-left');
+            toggleBtn.querySelector('i').classList.add('bi-chevron-right');
+        } else {
+            toggleBtn.style.left = '250px'; // Position when expanded
+            toggleBtn.querySelector('i').classList.remove('bi-chevron-right');
+            toggleBtn.querySelector('i').classList.add('bi-chevron-left');
+        }
+    }
+
+    document.getElementById('toggleBtn').addEventListener('click', toggleSidebar);
+    </script>
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAIN Website page</title>
+    <!-- Link to Bootstrap CSS via CDN for simplicity -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.css">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            overflow: hidden; /* Ensure no scrollbars appear */
+            background-color: #2a2a2a; /* A dark background to blend with the iframe content */
+        }
+
+        .iframe-background {
+            width: 100%; /* Adjust width to fit the parent container */
+            height: 100%; /* Adjust height to fit the parent container */
+            position: absolute; /* Make it cover the background */
+            top: 0;
+            left: 0;
+        }
+
+        iframe {
+            width: 100%; /* Make the iframe cover the container */
+            height: 100%; /* Make the iframe cover the container */
+            border: none; /* Removes the default iframe border */
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 250px;
+            background: #1a1a1a;
+            padding: 20px 0;
+            transition: width 0.3s;
+            overflow: hidden;
+            z-index: 2; /* Ensure it's above the iframe */
+        }
+
+        .sidebar.collapsed {
+            width: 80px;
+        }
+
+        .sidebar .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar .logo img {
+            max-width: 120px; /* Adjust logo size here */
+            transition: max-width 0.3s;
+        }
+
+        .sidebar.collapsed .logo img {
+            max-width: 85px; /* Adjust logo size for collapsed state here */
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar ul li {
+            text-align: center; /* Align text to the center */
+            padding: 10px 0;
+            display: flex; /* Use flexbox */
+            align-items: center; /* Center vertically */
+            justify-content: center; /* Center horizontally */
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center; /* Center vertically */
+            justify-content: flex-start; /* Align items to the start */
+            font-size: 18px;
+            transition: font-size 0.3s;
+            background: none; /* Remove background */
+            padding: 0; /* Remove padding */
+            width: 100%; /* Ensure full width for alignment */
+            padding-left: 20px; /* Add padding to align text properly */
+        }
+
+        .sidebar.collapsed ul li a {
+            justify-content: center; /* Center items when sidebar is collapsed */
+            padding-left: 0; /* Remove padding when collapsed */
+            font-size: 0;
+        }
+
+        .sidebar ul li a img {
+            width: 28px; /* Adjust icon size here */
+            height: 28px; /* Adjust icon size here */
+            margin-right: 10px;
+            transition: margin 0.3s;
+        }
+
+        .sidebar.collapsed ul li a img {
+            margin: 0;
+        }
+
+        .toggle-btn {
+            position: absolute;
+            top: 50%; /* Center vertically */
+            left: 80px; /* Adjusted to match initial collapsed state */
+            transform: translate(-50%, -50%); /* Center horizontally and vertically */
+            width: 30px;
+            height: 40px;
+            background: #1a1a1a;
+            color: white;
+            border: none;
+            z-index: 3; /* Ensure it's above the iframe and sidebar */
+            cursor: pointer;
+            transition: left 0.3s; /* Add transition for smooth movement */
+            border-radius: 6px; 
+        }
+
+        .tower-image {
+            position: absolute;
+            right: 0px;
+            bottom: 0px;
+            max-width: 200px; /* Adjust size as needed */
+            height: auto;
+            z-index: 1; /* Ensure it's above the iframe */
+        }
+
+        .listening-box-container {
+            position: absolute;
+            left: 50%;
+            bottom: 40px;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column; /* Stack items vertically */
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            z-index: 1; /* Ensure it's above the iframe */
+        }
+
+        .circle-icon {
+            width: 60px; /* Adjust size as needed */
+            height: 60px;
+            background-color: white; /* White background for the circle */
+            border-radius: 50%; /* Make it a circle */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px; /* Space between icon and text */
+            border: none; /* Remove default button border */
+            outline: none; /* Remove default button outline */
+            cursor: pointer; /* Change cursor to pointer */
+            padding: 0; /* Remove default padding */
+        }
+
+        .stop-button-cover {
+            width: 120px; /* Same width as the microphone button */
+            height: 60px; /* Same height as the microphone button */
+            background-color: #212529; /* Match the background color */
+            position: absolute;
+            left: 50%;
+            bottom: 38px; /* Adjust to position it correctly */
+            transform: translateX(-50%);
+            z-index: 0; /* Place it above the iframe but below the microphone button */
+        }
+
+        #microphoneIcon, #pauseIcon {
+            width: 30px; /* Adjust icon size as needed */
+            height: auto;
+        }
+
+        /* Chat container */
+        .chat-container {
+            position: fixed;
+            top: 180px;
+            right: 330px;
+            width: 500px;
+            height: 500px;
+            background-color: #000000;
+            /* border: 1px solid #f5f5f5; */
+            border-radius: 10px;
+            padding: 10px;
+            overflow-y: auto;
+            /*display: none; /* Initially hidden */
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Chat bubbles */
+        .chat-bubble {
+            padding: 10px;
+            border-radius: 15px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .user-input {
+            align-self: flex-start;
+            background-color: #e1ffc7;
+            color: #000;
+        }
+
+        .bot-response {
+            align-self: flex-end;
+            background-color: #515151;
+            color: #fff;
+        }
+
+        /* Chat bubble for starting recording */
+        .start-recording {
+            align-self: center;
+            background-color: #ffcccb;
+            color: #000;
+        }
+
+        /* Status dialog box */
+        .status-dialog {
+            position: fixed;
+            top: 80px;
+            right: 330px;
+            width: 300px;
+            height: 55px; /* Fixed height for the dialog box */
+            padding: 10px;
+            background-color: #000000;
+            /* border: 1px solid #000000; */
+            border-radius: 5px;
+            color: white;
+            z-index: 4; /* Ensure it's above other elements */
+            overflow-y: auto; /* Enable vertical scrolling */
+        }
+    </style>
+</head>
+<body>
+    <!-- Iframe acting as background -->
+    <div class="iframe-background">
+        <iframe src="http://192.168.2.105:8011/streaming/webrtc-demo/?server=192.168.2.105"
+                allow="camera; microphone; fullscreen; speaker;">
+        </iframe>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar collapsed" id="sidebar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='icons/your-logo.png') }}" alt="University Logo">
+        </div>
+        <ul>
+            <li>
+                <a href="{{ url_for('index') }}">
+                    <img src="{{ url_for('static', filename='icons/Home.png') }}" alt="Home Icon">
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('map_page') }}">
+                    <img src="{{ url_for('static', filename='icons/map-logo.png') }}" alt="Map Icon">
+                    <span>Map</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('pov_page') }}">
+                    <img src="{{ url_for('static', filename='icons/pov-logo.png') }}" alt="POV Icon">
+                    <span>Virtual Tour</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('manual_page') }}">
+                    <img src="{{ url_for('static', filename='icons/manual-logo.png') }}" alt="Manual Icon">
+                    <span>Manual</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <button class="toggle-btn" id="toggleBtn">
+        <i class="bi bi-chevron-right"></i>
+    </button>
+
+    <!-- Tower Image at the bottom right -->
+    <img src="{{ url_for('static', filename='icons/tower.png') }}" alt="Tower" class="tower-image">
+
+    <!-- Stop button cover -->
+    <div class="stop-button-cover"></div>
+
+    <div class="listening-box-container">
+        <button id="toggleButton" onclick="toggleMicrophone()" class="circle-icon">
+            <img id="microphoneIcon" src="{{ url_for('static', filename='icons/microphone.png') }}" alt="Microphone Icon">
+            <img id="pauseIcon" src="{{ url_for('static', filename='icons/pause.png') }}" alt="Pause Icon" style="display: none;">
+        </button>
+        <div class="listening-box">Speak</div>
+    </div>
+
+    <!-- Chat container -->
+    <div class="chat-container" id="chatContainer">
+        <!-- Chat bubbles will be appended here -->
+    </div>
+
+    <!-- Status dialog box -->
+    <div class="status-dialog" id="statusDialog">
+        <div id="statusText"></div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        let isRecording = false;
+
+        function showDialog(userText, botText) {
+            var chatContainer = document.getElementById('chatContainer');
+
+            if (userText) {
+                var userBubble = document.createElement('div');
+                userBubble.className = 'chat-bubble user-input';
+                userBubble.innerHTML = '<strong>Your Input:</strong><br>' + userText;
+                chatContainer.appendChild(userBubble);
+            }
+
+            if (botText) {
+                var botBubble = document.createElement('div');
+                botBubble.className = 'chat-bubble bot-response';
+                botBubble.innerHTML = '<strong>Bot Response:</strong><br>' + botText;
+                chatContainer.appendChild(botBubble);
+            }
+
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            chatContainer.style.display = 'flex'; // Show the chat container
+        }
+
+        function showStatusDialog(text) {
+            var statusDialog = document.getElementById('statusDialog');
+            var statusText = document.getElementById('statusText');
+            statusText.innerText = text;
+            statusDialog.style.display = 'block';
+        }
+
+        function toggleMicrophone() {
+            var microphoneIcon = document.getElementById('microphoneIcon');
+            var pauseIcon = document.getElementById('pauseIcon');
+
+            if (isRecording) {
+                // Stop recording
+                microphoneIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+                showStatusDialog('Processing what you said..');
+
+                // Make AJAX request to stop recording
+                $.ajax({
+                    url: '/stop_recording',
+                    type: 'POST',
+                    success: function(response) {
+                        // Display user's query and chatbot's response
+                        if (response.query) {
+                            showDialog(response.query, response.response);
+                        } else {
+                            showStatusDialog('No Dialogue');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        showStatusDialog('Error stopping recording: ' + error);
+                    }
+                });
+            } else {
+                // Start recording
+                microphoneIcon.style.display = 'none';
+                pauseIcon.style.display = 'block';
+                showStatusDialog('RECORDING STARTED!');
+
+                // Make AJAX request to start recording
+                $.ajax({
+                    url: '/start_recording',
+                    type: 'POST',
+                    success: function(response) {
+                        showStatusDialog(response.message);
+                    },
+                    error: function(xhr, status, error) {
+                        showStatusDialog('Error starting recording: ' + error);
+                    }
+                });
+            }
+
+            isRecording = !isRecording;
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.getElementById('toggleBtn');
+            
+            sidebar.classList.toggle('collapsed');
+            
+            if (sidebar.classList.contains('collapsed')) {
+                toggleBtn.style.left = '80px'; // Position when collapsed
+                toggleBtn.querySelector('i').classList.remove('bi-chevron-left');
+                toggleBtn.querySelector('i').classList.add('bi-chevron-right');
+            } else {
+                toggleBtn.style.left = '250px'; // Position when expanded
+                toggleBtn.querySelector('i').classList.remove('bi-chevron-right');
+                toggleBtn.querySelector('i').classList.add('bi-chevron-left');
+            }
+        }
+
+        document.getElementById('toggleBtn').addEventListener('click', toggleSidebar);
+    </script>
+</body>
+</html>
