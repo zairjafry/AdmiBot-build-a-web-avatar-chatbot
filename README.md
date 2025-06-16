@@ -97,5 +97,5 @@ Omniverse Audio2Face is an application that brings avatars to life. With Omniver
   - [GitHub](https://github.com/zairjafry)
   - [LinkedIn](https://www.linkedin.com/in/zairjafry)
 - **Ayesha Waheed**
- - [Github](https://github.com/ayeshawaheed9)
- - [LinkedIn](https://www.linkedin.com/in/ayesha-waheed-?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3B1COxssSJS0qTJ8LneDEMNw%3D%3D)
+  - [Github](https://github.com/ayeshawaheed9)
+  - [LinkedIn](https://www.linkedin.com/in/ayesha-waheed-?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3B1COxssSJS0qTJ8LneDEMNw%3D%3D)
